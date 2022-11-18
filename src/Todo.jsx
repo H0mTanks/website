@@ -12,10 +12,29 @@ export function Todo() {
 }
 
 function TodoBox() {
-  const { data, setData } = useContext(GlobalContext);
+  const { data, setData, currEmail } = useContext(GlobalContext);
 
   function generateId() {
-    return Math.floor(Math.random() * 90000) + 10000;
+    return data.length + 1;
+  }
+
+  function postData(newData) {
+    fetch("http://localhost:5001/todo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: currEmail, userData: newData }),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        if (!json.status) {
+          alert("Network Error", "Data not updated on server");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   function handleNodeRemoval(nodeId) {
@@ -24,22 +43,26 @@ function TodoBox() {
     });
 
     setData(newData);
+    postData(newData);
     return;
   }
 
   function handleSubmit(task) {
-    const id = generateId().toString();
+    const id = generateId();
     const complete = false;
     const newData = [...data, { id, task, complete }];
     setData(newData);
+    postData(newData);
   }
 
   function handleToggleComplete(nodeId) {
-    const newData = data.filter((item) => item.id !== nodeId);
+    const filterData = data.filter((item) => item.id !== nodeId);
     const toToggleItem = data.find((item) => item.id === nodeId);
 
     toToggleItem.complete = !toToggleItem.complete;
-    setData([toToggleItem, ...newData]);
+    const newData = [toToggleItem, ...filterData];
+    setData(newData);
+    postData(newData);
     return;
   }
 
@@ -117,7 +140,6 @@ function TodoForm({ onTaskSubmit }) {
     }
     onTaskSubmit(task);
     setTask("");
-    return;
   }
 
   return (

@@ -1,16 +1,14 @@
-import { useContext, useState } from "react";
-import { GlobalContext } from "./GlobalContext";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export const Register = () => {
-  const { setIsLogin, setCurrEmail } = useContext(GlobalContext);
+export const Forgot = () => {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   const navigate = useNavigate();
 
-  function handleRegister(e) {
+  function handleForgot(e) {
     e.preventDefault();
-    fetch("http://localhost:5001/register", {
+    fetch("http://localhost:5001/forgot", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -21,11 +19,10 @@ export const Register = () => {
       .then((json) => {
         console.log(json.status);
         if (json.status) {
-          setCurrEmail(email);
-          setIsLogin(true);
+          alert("password updated");
           navigate("/");
         } else {
-          alert("User already exists");
+          alert("User not found");
         }
       })
       .catch((error) => {
@@ -36,7 +33,9 @@ export const Register = () => {
   return (
     <div>
       <form className="form-signin">
-        <h1 className="h3 mb-3 font-weight-normal">Please Register</h1>
+        <h1 className="h3 mb-3 font-weight-normal">
+          Please enter new password for user
+        </h1>
         <input
           type="email"
           id="inputEmail"
@@ -55,7 +54,7 @@ export const Register = () => {
           required
         />
         <button
-          onClick={handleRegister}
+          onClick={handleForgot}
           className="btn btn-lg btn-primary btn-block"
           type="submit"
         >
